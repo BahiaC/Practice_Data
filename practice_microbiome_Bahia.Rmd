@@ -105,7 +105,8 @@ plot_richness(practice2017_rare, x="Disease_status", measures=c("Observed", "Cha
   geom_boxplot()+xlab("Group")+ylab("Diversity")
 #Convert alpha diversity estimates to a data form we can use for statistical testing
 practice2017_rare_richness<-as.matrix(estimate_richness(practice2017_rare, measures=c("Observed","Chao1","Shannon")))
-row.names(practice2017_rare_richness)<-row.names(sample_data(practice2017_rare))
+##don't need this - row names are correct
+#row.names(practice2017_rare_richness)<-row.names(sample_data(practice2017_rare))
 practice2017_rare_richness<-cbind(practice2017_rare_richness,sample_data(practice2017_rare))
 practice2017_rare_richness
 #For comaparisons of alpha diversity of more than two groups, use the Kruskal-Wallis test 
@@ -114,7 +115,7 @@ kruskal.test(Observed ~ Disease_status, data=practice2017_rare_richness)
 ##Kruskal-wallis rank sum test, pvalue 0.2284, thus no significant difference between populations, null hypothesis assumes from identical populations
 #Now test if diversity is significantly different between controls and patients who were ever depressed (and recovering mdd groups (Original_status)
 #only two groups here so use Man-Whitney U test
-wilcox.test(Observed ~ Original_status, data=practice2017_rare_richness)
+#wilcox.test(Observed ~ Disease_status, data=practice2017_rare_richness)
 #null asserts that medians of two samples are indentical 
 
 ```
