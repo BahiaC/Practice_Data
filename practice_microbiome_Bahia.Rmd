@@ -123,8 +123,51 @@ kruskal.test(Observed ~ Disease_status, data=practice2017_rare_richness)
 
 
 ##THEN 
+#cleaning and transformation 
+```{r Data cleaning and transformation}
+practice2017_rare_rel<-transform_sample_counts(practice2017_rare, function(x) x/sum(x))
+#x is always the count of the OTU in transforming the OTU table functions
+
+head(otu_table(practice2017_rare)) 
+head(otu_table(practice2017_rare_rel)) 
+#raw count changed to proportions (number between 0-1) from dividing by number of seqs in the sample (same number for all as we rarefy)
+
+##filter, removing OTUs that are only there in a very low abundance
+practice2017_rare_rel_fil1<-filter_taxa(practice2017_rare_rel, function(x) mean(x) > 1e-5, TRUE)
+#on average for any OTU the mean count has to be greater than 1e-5 9(0.00005) equivalant to 0.0001% 
+
+##summary of objects
+(practice2017_rare_rel)
+practice2017_rare_rel_fil1
+##filtering has cut out a lot of the OTUs
+
+```
 
 ## Including Plots
+```{r Plotting}
+#psmelt function combines everything in a really long scary way that is how ggplot likes to view the data, long format. 
+practice_smelt<-psmelt(practice2017_rare_rel_fil1)
+head(practice_smelt)
+
+#dplyr used to manipulate data, to get the information that we want for ggplot 
+
+ggplot(practice_smelt, aes(x=Sample, y=Abundance, fill=Phylum))+geom_bar(stat="identity")
+#fill is colour, stat="identity" uses the actual number in the plot and doesnt do anything to it  
+
+ggplot(practice_smelt, aes(x=Sample, y=Abundance, fill=Phylum))+geom_bar(stat="identity")+facet_grid(.~Disease_status)
+
+
+ggplot(practice_smelt, aes(x=Sample, y=Abundance, fill=Phylum))+geom_bar(stat="identity")+facet_grid(.~Disease_status, scales="free")
+#splits up the data in the plot into separate subplots, add in as formula
+#scale=free makes it proper 
+
+phyla_plot<-practice_smelt %>% group_by(Disease_status, Phylum) %>% mutate(av_abund=mean(Abundance)) %>% distinct(Abundance, .keep_all=TRUE)
+
+head(phyla_plot)
+
+
+
+```
 
 You can also embed plots, for example:
 
